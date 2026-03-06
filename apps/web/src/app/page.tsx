@@ -1,12 +1,10 @@
-import { Typography } from 'antd';
+import { AppLayout } from '@/components/layout';
+import { PhotoGallery } from '@/features/photos';
 
-const { Title } = Typography;
-
-export default function HomePage() {
+export default function Home() {
   return (
-    <main style={{ maxWidth: 1200, margin: '0 auto', padding: '24px' }}>
-      <Title level={2}>📸 Photo Upload & Comment</Title>
-      <p>Coming soon...</p>
-    </main>
+    <AppLayout>
+      <PhotoGallery />
+    </AppLayout>
   );
 }
