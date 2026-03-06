@@ -84,7 +84,8 @@ POST   /api/photos/:id/comments  → Add a comment to a photo
 
 1. `main` branch is always deployable
 2. Create feature branches from `main`
-3. PR → review → squash merge → delete branch
+3. **Before committing:** Always perform a code review using the `code-review` skill to catch issues, ensure quality, and verify conventions are followed
+4. PR → review → squash merge → delete branch
 
 ## Database Schema (Prisma)
 
