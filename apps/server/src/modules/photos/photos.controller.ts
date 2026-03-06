@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { PhotosService } from './photos.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { CreatePhotoDto } from './dto/create-photo.dto';
@@ -39,5 +39,19 @@ export class PhotosController {
   async addComment(@Param('id') id: string, @Body() dto: CreateCommentDto) {
     const comment = await this.photosService.addComment(id, dto);
     return { data: comment, message: 'Comment added successfully' };
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  async deletePhoto(@Param('id') id: string) {
+    await this.photosService.deletePhoto(id);
+    return { message: 'Photo deleted successfully' };
+  }
+
+  @Delete(':photoId/comments/:commentId')
+  @HttpCode(HttpStatus.OK)
+  async deleteComment(@Param('photoId') photoId: string, @Param('commentId') commentId: string) {
+    await this.photosService.deleteComment(photoId, commentId);
+    return { message: 'Comment deleted successfully' };
   }
 }

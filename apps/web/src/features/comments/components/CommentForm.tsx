@@ -24,7 +24,7 @@ export default function CommentForm({ photoId }: CommentFormProps) {
         content: values.content,
         author: values.author || undefined,
       });
-      form.resetFields(['content']);
+      form.resetFields();
       message.success('Comment added');
     } catch (error) {
       message.error(getErrorMessage(error));

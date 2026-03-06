@@ -1,12 +1,13 @@
 'use client';
 
-import { Spin, Alert, Typography, Card, Divider, Button } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Spin, Alert, Typography, Card, Divider, Button, Popconfirm, App } from 'antd';
+import { ArrowLeftOutlined, DeleteOutlined } from '@ant-design/icons';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { getErrorMessage, formatDate } from '@/lib';
 import { CommentForm, CommentList } from '@/features/comments';
 import { usePhoto } from '../hooks/usePhoto';
+import { useDeletePhoto } from '../hooks/useDeletePhoto';
 
 interface PhotoDetailProps {
   photoId: string;
@@ -15,6 +16,18 @@ interface PhotoDetailProps {
 export default function PhotoDetail({ photoId }: PhotoDetailProps) {
   const router = useRouter();
   const { data: photo, isLoading, error } = usePhoto(photoId);
+  const deletePhoto = useDeletePhoto();
+  const { message } = App.useApp();
+
+  const handleDeletePhoto = async () => {
+    try {
+      await deletePhoto.mutateAsync(photoId);
+      message.success('Photo deleted successfully');
+      router.push('/');
+    } catch (err) {
+      message.error(getErrorMessage(err));
+    }
+  };
 
   if (isLoading) {
     return (
@@ -41,14 +54,22 @@ export default function PhotoDetail({ photoId }: PhotoDetailProps) {
 
   return (
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
-      <Button
-        type="text"
-        icon={<ArrowLeftOutlined />}
-        onClick={() => router.push('/')}
-        style={{ marginBottom: 16 }}
-      >
-        Back to Gallery
-      </Button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+        <Button type="text" icon={<ArrowLeftOutlined />} onClick={() => router.push('/')}>
+          Back to Gallery
+        </Button>
+        <Popconfirm
+          title="Delete photo"
+          description="Are you sure? This will also delete all comments."
+          onConfirm={handleDeletePhoto}
+          okText="Delete"
+          okButtonProps={{ danger: true }}
+        >
+          <Button danger icon={<DeleteOutlined />} loading={deletePhoto.isPending}>
+            Delete Photo
+          </Button>
+        </Popconfirm>
+      </div>
 
       <Card>
         <div
@@ -74,7 +95,7 @@ export default function PhotoDetail({ photoId }: PhotoDetailProps) {
 
         <Typography.Title level={4}>Comments ({photo.comments.length})</Typography.Title>
 
-        <CommentList comments={photo.comments} />
+        <CommentList comments={photo.comments} photoId={photo.id} />
 
         <Divider />
 

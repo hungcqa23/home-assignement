@@ -59,4 +59,29 @@ export class PhotosService {
       },
     });
   }
+
+  async deletePhoto(id: string) {
+    const photo = await this.findOne(id);
+
+    const keyIndex = photo.url.indexOf('photos/');
+    if (keyIndex !== -1) {
+      await this.storage.delete(photo.url.substring(keyIndex));
+    }
+
+    await this.prisma.photo.delete({ where: { id } });
+  }
+
+  async deleteComment(photoId: string, commentId: string) {
+    await this.findOne(photoId);
+
+    const comment = await this.prisma.comment.findUnique({
+      where: { id: commentId },
+    });
+
+    if (!comment || comment.photoId !== photoId) {
+      throw new NotFoundException(`Comment with ID "${commentId}" not found on photo "${photoId}"`);
+    }
+
+    await this.prisma.comment.delete({ where: { id: commentId } });
+  }
 }

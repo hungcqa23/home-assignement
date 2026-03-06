@@ -25,6 +25,8 @@ const mockPhotosService = {
   findAll: jest.fn(),
   findOne: jest.fn(),
   addComment: jest.fn(),
+  deletePhoto: jest.fn(),
+  deleteComment: jest.fn(),
 };
 
 describe('PhotosController', () => {
@@ -108,6 +110,28 @@ describe('PhotosController', () => {
         content: 'Nice photo!',
         author: 'Alice',
       });
+    });
+  });
+
+  describe('deletePhoto', () => {
+    it('should return success message', async () => {
+      mockPhotosService.deletePhoto.mockResolvedValue(undefined);
+
+      const result = await controller.deletePhoto('clxyz123');
+
+      expect(result).toEqual({ message: 'Photo deleted successfully' });
+      expect(mockPhotosService.deletePhoto).toHaveBeenCalledWith('clxyz123');
+    });
+  });
+
+  describe('deleteComment', () => {
+    it('should return success message', async () => {
+      mockPhotosService.deleteComment.mockResolvedValue(undefined);
+
+      const result = await controller.deleteComment('clxyz123', 'clxyz456');
+
+      expect(result).toEqual({ message: 'Comment deleted successfully' });
+      expect(mockPhotosService.deleteComment).toHaveBeenCalledWith('clxyz123', 'clxyz456');
     });
   });
 });

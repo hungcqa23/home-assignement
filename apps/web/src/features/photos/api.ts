@@ -31,4 +31,8 @@ export const photosApi = {
     const res = await httpClient.get<ApiResponse<Photo>>(`/photos/${id}`);
     return extractData(res);
   },
+
+  async delete(id: string): Promise<void> {
+    await httpClient.delete(`/photos/${id}`);
+  },
 };

@@ -9,7 +9,7 @@
 ```
 photo-upload-comment/
 ├── apps/
-│   ├── web/              → Next.js 15 (App Router), Ant Design
+│   ├── web/              → Next.js 14 (App Router), Ant Design
 │   └── server/           → NestJS REST API, Prisma ORM
 ├── packages/
 │   └── shared/           → TypeScript interfaces (zero runtime deps)
@@ -34,7 +34,7 @@ photo-upload-comment/
 | --------------- | ------ | ------------------------------------------------ |
 | `PrismaModule`  | Global | Database connection lifecycle, graceful shutdown |
 | `StorageModule` | Global | Cloudflare R2 client, presigned URL generation   |
-| `PhotosModule`  | Scoped | Photo CRUD, comment operations                   |
+| `PhotosModule`  | Scoped | Photo & comment CRUD (create, read, delete)      |
 
 ### Cross-Cutting Concerns
 
@@ -53,6 +53,8 @@ POST   /api/photos               → Create photo record (after successful R2 up
 GET    /api/photos               → List all photos with comments (newest first)
 GET    /api/photos/:id           → Single photo with comments
 POST   /api/photos/:id/comments  → Add comment to a photo
+DELETE /api/photos/:id           → Delete photo (R2 + DB, cascades comments)
+DELETE /api/photos/:photoId/comments/:commentId → Delete a comment
 ```
 
 All responses follow a consistent envelope:

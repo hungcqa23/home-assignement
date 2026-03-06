@@ -5,3 +5,4 @@ export { default as UploadPhotoModal } from './components/UploadPhotoModal';
 export { usePhoto } from './hooks/usePhoto';
 export { usePhotos } from './hooks/usePhotos';
 export { useUploadPhoto } from './hooks/useUploadPhoto';
+export { useDeletePhoto } from './hooks/useDeletePhoto';

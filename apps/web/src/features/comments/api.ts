@@ -6,4 +6,8 @@ export const commentsApi = {
     const res = await httpClient.post<ApiResponse<Comment>>(`/photos/${photoId}/comments`, data);
     return extractData(res);
   },
+
+  async delete(photoId: string, commentId: string): Promise<void> {
+    await httpClient.delete(`/photos/${photoId}/comments/${commentId}`);
+  },
 };

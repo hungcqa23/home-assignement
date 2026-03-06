@@ -53,7 +53,7 @@ export default function UploadPhotoModal({ open, onClose }: UploadPhotoModalProp
       onCancel={handleClose}
       okText="Upload"
       confirmLoading={uploadPhoto.isPending}
-      destroyOnClose
+      destroyOnHidden
     >
       <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
         <Form.Item label="Photo" required>

@@ -26,15 +26,19 @@ const mockPrismaService = {
     create: jest.fn(),
     findMany: jest.fn(),
     findUnique: jest.fn(),
+    delete: jest.fn(),
   },
   comment: {
     create: jest.fn(),
+    findUnique: jest.fn(),
+    delete: jest.fn(),
   },
 };
 
 const mockStorageService = {
   generatePresignedUrl: jest.fn(),
   getPublicUrl: jest.fn(),
+  delete: jest.fn(),
 };
 
 describe('PhotosService', () => {
@@ -186,6 +190,70 @@ describe('PhotosService', () => {
       mockPrismaService.photo.findUnique.mockResolvedValue(null);
 
       await expect(service.addComment('nonexistent', { content: 'Hello' })).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('deletePhoto', () => {
+    it('should delete photo from storage and database', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(mockPhoto);
+      mockStorageService.delete.mockResolvedValue(undefined);
+      mockPrismaService.photo.delete.mockResolvedValue(mockPhoto);
+
+      await service.deletePhoto('clxyz123');
+
+      expect(mockStorageService.delete).toHaveBeenCalledWith('photos/abc.jpg');
+      expect(mockPrismaService.photo.delete).toHaveBeenCalledWith({
+        where: { id: 'clxyz123' },
+      });
+    });
+
+    it('should throw NotFoundException when photo does not exist', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(null);
+
+      await expect(service.deletePhoto('nonexistent')).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('deleteComment', () => {
+    it('should delete comment when it belongs to the photo', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(mockPhoto);
+      mockPrismaService.comment.findUnique.mockResolvedValue(mockComment);
+      mockPrismaService.comment.delete.mockResolvedValue(mockComment);
+
+      await service.deleteComment('clxyz123', 'clxyz456');
+
+      expect(mockPrismaService.comment.delete).toHaveBeenCalledWith({
+        where: { id: 'clxyz456' },
+      });
+    });
+
+    it('should throw NotFoundException when comment does not exist', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(mockPhoto);
+      mockPrismaService.comment.findUnique.mockResolvedValue(null);
+
+      await expect(service.deleteComment('clxyz123', 'nonexistent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw NotFoundException when comment belongs to different photo', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(mockPhoto);
+      mockPrismaService.comment.findUnique.mockResolvedValue({
+        ...mockComment,
+        photoId: 'different-photo',
+      });
+
+      await expect(service.deleteComment('clxyz123', 'clxyz456')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw NotFoundException when photo does not exist', async () => {
+      mockPrismaService.photo.findUnique.mockResolvedValue(null);
+
+      await expect(service.deleteComment('nonexistent', 'clxyz456')).rejects.toThrow(
         NotFoundException,
       );
     });
